@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Torrent File Details</title>
+</head>
+<body>
+<h1>Torrent Descriptor File Details</h1>
+<p><em>* Denotes an optional field in the Torrent Descriptor File.  As a result it may be blank.  Refer to the <a href="https://wiki.theory.org/BitTorrentSpecification#Metainfo_File_Structure">BitTorrent Specification</a>.</em></p>
+<h2>Meta Data</h2>
+<table border="1" style="font-family:sans-serif;">
+<tr><td><b>torrent filename</b></td><td>{{ torrent_filename }}</td></tr>
+<tr><td><b>infohash</b></td><td>{{ infohash }}</td></tr>
+<tr><td><b>announce</b></td><td>{{ announce }}</td></tr>
+<tr><td><b>announce-list*</b></td><td>
+{% for url in announce_list -%}
+{{ url[0] }}</br>
+{% endfor -%}
+</td></tr>
+<tr><td><b>creation date*</b> (epoch time)</td><td>{{ creation_date }} {{ creation_date_conv }}</td></tr>
+<tr><td><b>comment*</b></td><td>{{ comment }}</td></tr>
+<tr><td><b>created by*</b></td><td>{{ created_by }}</td></tr>
+<tr><td><b>encoding*</b></td><td>{{ encoding }}</td></tr>
+<tr><td><b>piece length</b> (bytes)</td><td>{{ piece_length }} ({{ piece_length_hr }})</td></tr>
+<tr><td><b>private*</b></td><td>{{ private }}</td></tr>
+<tr><td><b>name*</b></td><td>{{ name }}</td></tr>
+<tr><td><b>length</b> (bytes)</td><td>{{ sflength }} ({{ sflength_hr }})</td></tr>
+<tr><td><b>md5sum*</b></td><td>{{ sfmd5sum }}</td></tr>
+</table>
+
+<h2>Calculated Data</h2>
+<table border="1" style="font-family:sans-serif;">
+<tr><td><b>type of torrent</b></td><td>{{ torrent_type }}</td></tr>
+<tr><td><b>number of pieces</b></td><td>{{ num_pieces }}</td></tr>
+<tr><td><b>length of last piece</b> (bytes)</td><td>{{ last_piece_size }} ({{ last_piece_size_hr }})</td></tr>
+<tr><td><b>last piece as % of piece length</b></td><td>{{ last_piece_percent }}</td></tr>
+<tr><td><b>size of torrent</b> (bytes)</td><td>{{ torrent_size }} ({{ torrent_size_hr }})</td></tr>
+</table>
+<p><em><font color="red">{{ errmsg }}</font></p></em>
+<p><em>NOTE: the length of last piece is calculated as:</br>
+(number of pieces X piece length) - size of torrent</em></p>
+
+<h2>This Torrent Descriptor has the following SHA1 Hashes for each piece, respectively:</h2>
+<table border="1" style="font-family:sans-serif;">
+{% set counter = 0 -%}
+{% for hash in piecehashes -%}
+<tr><td>Piece {{ counter }}</td><td>{{ hash }}</td></tr>
+{% set counter = counter + 1 -%}
+{% endfor -%}
+</table>
+
+</body>
+</html>
