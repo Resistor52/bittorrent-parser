@@ -10,6 +10,7 @@ else
   rm output/*
 fi
 echo "<html><head><title>list.html</title></head><body>" > output/list.html
+echo -e "infohash\tcreation_date\tpiece_length\tnumber_pieces\tnumber_files\ttorrent_size\terror" > statistics.csv
 counter=0
 wd=$(pwd)
 for item in $(find torrents/ -name "*.torrent"); do

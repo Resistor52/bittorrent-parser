@@ -89,6 +89,11 @@ def make_html(
             html = render_template('multiple.html', context)
         f.write(html)
 
+    with open("statistics.csv", "a") as f:
+	record = str(infohash) + "\t" + str(creation_date_conv) + "\t" + str(piece_length) + "\t"
+        record += str(len(piecehashes)) + "\t" + str(len(files)) + "\t" + str(torrent_size) + errmsg + "\n"
+        f.write(record)
+
 def main():
     torrent_filename = sys.argv[1]
     torrent_file = open(torrent_filename, "rb")
