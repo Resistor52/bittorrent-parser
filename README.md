@@ -9,11 +9,11 @@ In addition to Python 2.7, you will need Jinja2, hurry.filesize, and bencode and
 ## Syntax
 To run the program type at the command line:
 ```
-python bittorrent-parser.py myfile.torrent
+python parse-torrent.py myfile.torrent
 ```
 or 
 ```
-python bittorrent-parser.py myfile.torrent myoutput.html
+python parse-torrent.py myfile.torrent myoutput.html
 ```
 
 where `myfile.torrent` is the name of the metainfo file to parse and 'myoutput.html' is the name of resulting output file.  If a name of the output file is not provided, it will default to `output.html`
