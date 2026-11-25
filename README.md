@@ -4,7 +4,7 @@ This is a python program to parse one or more BitTorrent metainfo (*torrent) fil
 
 ## Requirements 
 
-In addition to Python 2.7, you will need Jinja2, hurry.filesize, and bencode and possibly a few other libraries as  indicated in the import statements.  To use the included bash scripts you will need to to be using Linux.
+In addition to Python 3, you will need Jinja2, hurry.filesize, and bencode and possibly a few other libraries as  indicated in the import statements.  To use the included bash scripts you will need to to be using Linux.
 
 ## Syntax
 To run the program type at the command line:
@@ -33,3 +33,7 @@ Note that the extension of the metainfo file need not be "torrent."  For example
 
 
 *Created by Kenneth G. Hartman -  [www.kennethghartman.com](www.kennethghartman.com)* 
+
+## Info-dictionary-only files
+
+A client that fetches a torrent's metadata from a peer (BEP 9) saves a file holding only the `info` dictionary, with no `announce`, `creation date` or `created by`. Torrential Downpour's session `Logs/*.torrent` files are of this kind. The parser accepts them, flags them in the report, and shows the optional `source` key of the info dictionary.

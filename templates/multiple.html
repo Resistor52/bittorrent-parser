@@ -8,6 +8,7 @@
 <h1>Torrent Descriptor File Details</h1>
 <p><em>* Denotes an optional field in the Torrent Descriptor File.  As a result it may be blank.  Refer to the <a href="https://wiki.theory.org/BitTorrentSpecification#Metainfo_File_Structure">BitTorrent Specification</a>.</em></p>
 <h2>Meta Data</h2>
+{% if info_only %}<p><b>This file holds only the info dictionary</b> (no announce, creation date or creator). That is the form a client saves after fetching the metadata from a peer (BEP 9), so it says nothing about the original .torrent file.</p>{% endif %}
 <table border="1" style="font-family:sans-serif;">
 <tr><td><b>torrent filename</b></td><td>{{ torrent_filename }}</td></tr>
 <tr><td><b>infohash</b></td><td>{{ infohash }}</td></tr>
@@ -24,6 +25,7 @@
 <tr><td><b>piece length</b> (bytes)</td><td>{{ piece_length }} ({{ piece_length_hr }})</td></tr>
 <tr><td><b>private*</b></td><td>{{ private }}</td></tr>
 <tr><td><b>name*</b></td><td>{{ name }}</td></tr>
+<tr><td><b>source*</b> (info dictionary)</td><td>{{ source }}</td></tr>
 </table>
 
 <h2>Calculated Data</h2>
@@ -36,16 +38,14 @@
 </table>
 <p><em><font color="red">{{ errmsg }}</font></p></em>
 <p><em>NOTE: the length of last piece is calculated as:</br>
-(number of pieces X piece length) - size of torrent</em></p>
+size of torrent - ((number of pieces - 1) X piece length)</em></p>
 
 <h2>This Torrent Descriptor has the following file paths:</h2>
 <table border="1" style="font-family:sans-serif;">
 <tr><th>File Path</th><th>Length</th><th>md5sum*</th></tr>
 {% for file in files -%}
 <tr><td>
-{% for item in file['path'] -%}
-{{ item }}
-{% endfor -%}
+{{ file['path']|join('/') }}
 </td><td>{{ file['length'] }}</td><td>{{ file['md5sum'] }}</td></tr>
 {% endfor -%}
 </table>
@@ -53,10 +53,8 @@
 <h2>This Torrent Descriptor has the following SHA1 Hashes for each piece, respectively:</h2>
 <p><em>NOTE PER THE SPEC: "For the purposes of piece boundaries in the multi-file case, consider the file data as one long continuous stream, composed of the concatenation of each file in the order listed in the files list. The number of pieces and their boundaries are then determined in the same manner as the case of a single file. Pieces may overlap file boundaries."</em></p>
 <table border="1" style="font-family:sans-serif;">
-{% set counter = 0 -%}
 {% for hash in piecehashes -%}
-<tr><td>Piece {{ counter }}</td><td>{{ hash }}</td></tr>
-{% set counter = counter + 1 -%}
+<tr><td>Piece {{ loop.index0 }}</td><td>{{ hash }}</td></tr>
 {% endfor -%}
 </table>
 

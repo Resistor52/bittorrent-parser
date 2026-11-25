@@ -27,7 +27,7 @@ def _decode_value(val):
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_ENVIRONMENT = Environment(
-    autoescape=False,
+    autoescape=True,  # torrent names are untrusted input
     loader=FileSystemLoader(os.path.join(PATH, 'templates')),
     trim_blocks=False)
 
@@ -46,6 +46,9 @@ def make_html(
         encoding,
         piece_length,
         private,
+        name,
+        source,
+        info_only,
         sflength,
         sfmd5sum,
         files,
@@ -79,6 +82,9 @@ def make_html(
         'piece_length':piece_length,
         'piece_length_hr':size(piece_length),
         'private':private,
+        'name': name,
+        'source': source,
+        'info_only': info_only,
         'sflength':sflength,
         'sflength_hr':sflength_hr,
         'sfmd5sum':sfmd5sum,
@@ -114,7 +120,8 @@ def main():
         metainfo = bencodepy.decode(raw_data)
     except Exception:
         sys.exit(torrent_filename + " is not a valid *.torrent file\n")
-    announce = _decode_value(metainfo[b'announce'])
+    # Optional: a .torrent rebuilt from peer metadata (BEP 9) holds only the info dictionary
+    announce = _decode_value(metainfo.get(b'announce', b''))
     if b'announce-list' in metainfo:
         announce_list = [[_decode_value(url) for url in tier] for tier in metainfo[b'announce-list']]
     else:
@@ -142,6 +149,11 @@ def main():
         private = info[b'private']
     else:
         private = ""
+    if b'source' in info:
+        source = _decode_value(info[b'source'])
+    else:
+        source = ""
+    info_only = list(metainfo.keys()) == [b'info']
     if b'name' in info:
         name = _decode_value(info[b'name'])
     else:
@@ -177,11 +189,11 @@ def main():
         torrent_size = sflength
     else:
         torrent_type = 'multiple file torrent'
-    last_piece_size = (len(piecehashes) * piece_length) - torrent_size
+    last_piece_size = torrent_size - (len(piecehashes) - 1) * piece_length
     last_piece_percent = '{:.1%}'.format(float(last_piece_size) / piece_length)
     errmsg = ""
-    if last_piece_size > piece_length:
-        errmsg += "WARNING: The calculated length of the last piece is greater than the stated piece length\n"
+    if not 0 < last_piece_size <= piece_length:
+        errmsg += "WARNING: The piece count does not match the torrent size and piece length\n"
     if ((piece_length > torrent_size) and (torrent_type == 'multiple file torrent')):
         errmsg += "WARNING: The stated length of an individual piece is greater than the calculated torrent size\n"
     make_html(
@@ -195,6 +207,9 @@ def main():
         encoding,
         piece_length,
         private,
+        name,
+        source,
+        info_only,
         sflength,
         sfmd5sum,
         files,
